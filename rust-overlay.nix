@@ -1,27 +1,27 @@
 # This file provide a Rust overlay, which provides pre-packaged bleeding edge versions of rustc
 # and cargo.
-self: super:
+{ self, super, manifests }:
 
 with import ./lib/parseTOML.nix;
 let
   # See https://github.com/rust-lang-nursery/rustup.rs/blob/master/src/rustup-dist/src/dist.rs
   defaultDistRoot = "https://static.rust-lang.org";
-  manifest_v1_url = {
-    dist_root ? defaultDistRoot + "/dist",
-    date ? null,
-    staging ? false,
-    # A channel can be "nightly", "beta", "stable", "\d{1}.\d{1}.\d{1}", or "\d{1}.\d{2\d{1}".
-    channel ? "nightly"
-  }:
-    if date == null && staging == false
-    then "${dist_root}/channel-rust-${channel}"
-    else if date != null && staging == false
-    then "${dist_root}/${date}/channel-rust-${channel}"
-    else if date == null && staging == true
-    then "${dist_root}/staging/channel-rust-${channel}"
-    else throw "not a real-world case";
+  #manifest_v1_url = {
+  #  dist_root ? defaultDistRoot + "/dist",
+  #  date ? null,
+  #  staging ? false,
+  #  # A channel can be "nightly", "beta", "stable", "\d{1}.\d{1}.\d{1}", or "\d{1}.\d{2\d{1}".
+  #  channel ? "nightly"
+  #}:
+  #  if date == null && staging == false
+  #  then "${dist_root}/channel-rust-${channel}"
+  #  else if date != null && staging == false
+  #  then "${dist_root}/${date}/channel-rust-${channel}"
+  #  else if date == null && staging == true
+  #  then "${dist_root}/staging/channel-rust-${channel}"
+  #  else throw "not a real-world case";
 
-  manifest_v2_url = args: (manifest_v1_url args) + ".toml";
+  #manifest_v2_url = args: (manifest_v1_url args) + ".toml";
 
   # Intersection of rustup-dist/src/dist.rs listed platforms and stdenv/default.nix.
   hostTripleOf = system: { # switch
@@ -52,7 +52,7 @@ let
   #   cargo, rust-analysis, rust-docs, rust-src, rust-std, rustc, and
   #   rust, which aggregates them in one package.
   fromManifest = manifest: {stdenv, fetchurl, patchelf}:
-    let pkgs = fromTOML (builtins.readFile (builtins.fetchurl manifest)); in
+    let pkgs = fromTOML (builtins.readFile manifest); in
     with super.lib; flip mapAttrs pkgs.pkg (name: pkg:
       let
         srcInfo = pkg.target.${hostTripleOf stdenv.system} or pkg.target."*";
@@ -92,12 +92,12 @@ let
 in
 
 {
-  lib = super.lib // {
-    inherit fromTOML;
-    rustLib = {
-      inherit fromManifest manifest_v2_url ;
-    };
-  };
+  #lib = super.lib // {
+  #  inherit fromTOML;
+  #  rustLib = {
+  #    inherit fromManifest manifest_v2_url ;
+  #  };
+  #};
 
   # For each channel:
   #   rustChannels.nightly.cargo
@@ -108,13 +108,13 @@ in
   #   rustChannels.nightly.rust-src
   #   rustChannels.nightly.rust-std
   rustChannels = {
-    nightly = fromManifest (manifest_v2_url { channel = "nightly"; }) {
+    nightly = fromManifest (manifests.nightly) {
       inherit (self) stdenv fetchurl patchelf;
     };
-    beta    = fromManifest (manifest_v2_url { channel = "beta"; }) {
+    beta    = fromManifest (manifests.beta) {
       inherit (self) stdenv fetchurl patchelf;
     };
-    stable  = fromManifest (manifest_v2_url { channel = "stable"; }) {
+    stable  = fromManifest (manifests.stable) {
       inherit (self) stdenv fetchurl patchelf;
     };
   };
