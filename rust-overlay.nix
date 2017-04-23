@@ -1,6 +1,6 @@
 # This file provide a Rust overlay, which provides pre-packaged bleeding edge versions of rustc
 # and cargo.
-{ self, super, manifests }:
+self: super:
 
 with import ./lib/parseTOML.nix;
 let
@@ -22,6 +22,12 @@ let
   #  else throw "not a real-world case";
 
   #manifest_v2_url = args: (manifest_v1_url args) + ".toml";
+  manifests =
+    if super ? manifests
+    then
+      super.manifests
+    else
+      import ./lib/loadManifests.nix;
 
   # Intersection of rustup-dist/src/dist.rs listed platforms and stdenv/default.nix.
   hostTripleOf = system: { # switch
