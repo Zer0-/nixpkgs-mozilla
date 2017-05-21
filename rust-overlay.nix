@@ -2,7 +2,7 @@
 # and cargo.
 self: super:
 
-with import ./lib/parseTOML.nix;
+#with import ./lib/parseTOML.nix;
 let
   # See https://github.com/rust-lang-nursery/rustup.rs/blob/master/src/rustup-dist/src/dist.rs
   defaultDistRoot = "https://static.rust-lang.org";
@@ -58,7 +58,7 @@ let
   #   cargo, rust-analysis, rust-docs, rust-src, rust-std, rustc, and
   #   rust, which aggregates them in one package.
   fromManifest = manifest: {stdenv, fetchurl, patchelf}:
-    let pkgs = fromTOML (builtins.readFile manifest); in
+    let pkgs = builtins.fromJSON (builtins.readFile manifest); in
     with super.lib; flip mapAttrs pkgs.pkg (name: pkg:
       let
         srcInfo = pkg.target.${hostTripleOf stdenv.system} or pkg.target."*";
