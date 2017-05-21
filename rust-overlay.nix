@@ -71,6 +71,7 @@ let
             url = srcInfo.url;
             sha256 = srcInfo.hash;
           };
+          patches = [ ./cargo_manifest.patch ];
           # (@nbp) TODO: Check on Windows and Mac.
           # This code is inspired by patchelf/setup-hook.sh to iterate over all binaries.
           installPhase = ''

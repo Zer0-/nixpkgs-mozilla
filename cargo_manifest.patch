@@ -1,0 +1,7 @@
+--- ./cargo/manifest.in	2017-05-20 18:16:04.000000000 -0400
++++ ./cargo/manifest2.in	2017-05-21 19:36:52.640291171 -0400
+@@ -30,4 +30,3 @@
+ file:share/doc/cargo/LICENSE-APACHE
+ file:share/doc/cargo/README.md
+ file:share/doc/cargo/LICENSE-THIRD-PARTY
+-file:etc/bash_completion.d/cargo
