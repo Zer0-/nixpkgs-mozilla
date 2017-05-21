@@ -150,9 +150,9 @@ let
 in
 
 {
-  testing = fromTOML (builtins.readFile ./channel-rust-nightly.toml);
-  testing_url = fromTOML (builtins.readFile (builtins.fetchurl
-  https://static.rust-lang.org/dist/channel-rust-nightly.toml));
+  #testing = fromTOML (builtins.readFile ./channel-rust-nightly.toml);
+  #testing_url = fromTOML (builtins.readFile (builtins.fetchurl
+  #https://static.rust-lang.org/dist/channel-rust-nightly.toml));
   inherit fromTOML;
 }
 
