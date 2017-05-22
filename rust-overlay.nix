@@ -64,6 +64,13 @@ let
         srcInfo = pkg.target.${hostTripleOf stdenv.system} or pkg.target."*";
         version' = builtins.match "([^ ]*) [(]([^ ]*) ([^ ]*)[)]" pkg.version;
         version = "${elemAt version' 0}-${elemAt version' 2}-${elemAt version' 1}";
+
+        versionNumbers' = builtins.match "(^[0-9]+)\.([0-9]+)\.([0-9]+).*" (elemAt version' 0);
+        majorVersion = builtins.fromJSON (elemAt versionNumbers' 0);
+        minorVersion = builtins.fromJSON (elemAt versionNumbers' 1);
+        #subVersion = builtins.fromJSON (elemAt versionNumbers' 2);
+
+        shouldPatch = name == "rust" && majorVersion == 1 && minorVersion >= 19;
       in
         stdenv.mkDerivation {
           name = name + "-" + version;
@@ -71,7 +78,7 @@ let
             url = srcInfo.url;
             sha256 = srcInfo.hash;
           };
-          patches = [ ./cargo_manifest.patch ];
+          patches = if shouldPatch then [ ./cargo_manifest.patch ] else [];
           # (@nbp) TODO: Check on Windows and Mac.
           # This code is inspired by patchelf/setup-hook.sh to iterate over all binaries.
           installPhase = ''
