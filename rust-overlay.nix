@@ -70,7 +70,8 @@ let
         minorVersion = builtins.fromJSON (elemAt versionNumbers' 1);
         #subVersion = builtins.fromJSON (elemAt versionNumbers' 2);
 
-        shouldPatch = name == "rust" && majorVersion == 1 && minorVersion >= 19;
+        shouldPatch = (name == "rust" && majorVersion == 1 && minorVersion >= 19)
+          || (name == "cargo" && majorVersion == 0 && minorVersion >= 20);
       in
         stdenv.mkDerivation {
           name = name + "-" + version;
